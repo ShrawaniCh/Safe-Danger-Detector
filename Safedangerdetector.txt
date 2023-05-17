@@ -1,0 +1,72 @@
+#include "LiquidCrystal_PCF8574.h"
+
+#define LCD_ADDRESS 0x27
+#define LCD_ROWS 2
+#define LCD_COLUMNS 16
+#define BACKLIGHT 255
+
+#define trigPin 9
+#define buz 6
+#define echoPin 8
+#define led 4
+
+LiquidCrystal_PCF8574 lcdI2C;
+
+
+void setup()
+{
+  Serial.begin (9600);
+
+
+lcdI2C.begin(LCD_COLUMNS, LCD_ROWS, LCD_ADDRESS, BACKLIGHT);
+lcdI2C.print("ULTRASONIC");
+delay(5000);
+lcdI2C.clear();
+
+pinMode(trigPin,OUTPUT);
+pinMode(echoPin,INPUT );
+pinMode(buz,OUTPUT);
+pinMode(led,OUTPUT);
+}
+
+void loop ()
+{
+
+long duration, distance;
+
+digitalWrite(trigPin, LOW);
+
+delayMicroseconds(2);
+
+digitalWrite(trigPin, HIGH);
+
+delayMicroseconds(10);
+
+digitalWrite(trigPin, LOW);
+
+duration = pulseIn(echoPin, HIGH);
+
+distance = (duration/2) / 29.1;
+
+if(distance < 15)
+{
+  lcdI2C.clear();
+lcdI2C.print("Danger");
+digitalWrite(led,HIGH);
+digitalWrite(buz,HIGH);
+} 
+else
+{
+  lcdI2C.clear();
+  lcdI2C.print("Safe");
+  digitalWrite(led,LOW);
+  digitalWrite(buz,LOW);
+}
+
+Serial.print(distance);
+Serial.println(" cm Compbotz ");
+delay(200);
+
+
+
+
